@@ -30,3 +30,16 @@ jobs:
       # Equivalente ao bloco 'script' da Ação 1 [cite: 74, 76]
       - name: Executando o build
         run: echo "simulando um docker build"
+      
+      - name: Build and Push - Acao 2
+        run: |
+          # Define o nome da imagem baseado no repositório e converte para minúsculo
+          IMAGE_ID=ghcr.io/${{ github.repository }}
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[:upper:]' '[:lower:]')
+          
+          # 1. Build da imagem com a tag do commit e 'latest' 
+          docker build -t $IMAGE_ID:${{ github.sha }} -t $IMAGE_ID:latest .
+          
+          # 2. Push das imagens para o registro [cite: 98, 99]
+          docker push $IMAGE_ID:${{ github.sha }}
+          docker push $IMAGE_ID:latest
