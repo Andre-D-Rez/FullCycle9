@@ -43,3 +43,5 @@ docker run -d -p 5000:5000 seu-usuário/my-flask-app
 ```
 
 - A aplicação responderá em duas rotas na web: http://localhost:5000/health-check e http://localhost:5000/hello?name=guijac
+
+# Alteração pedida
