@@ -1,0 +1,32 @@
+name: Acao 1 - Pipeline Inicial
+
+on:
+  push:
+    branches: [ "main" ]
+
+# CRUCIAL: Define permissões para que o token possa interagir com o registro de pacotes
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    # Substitui 'image: docker:24.0.5' e 'services: dind' [cite: 57, 58]
+    runs-on: ubuntu-latest 
+
+    steps:
+      # Passo necessário para o GitHub conseguir "enxergar" seu código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Equivalente ao 'before_script' e 'docker login' [cite: 59, 62]
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Equivalente ao bloco 'script' da Ação 1 [cite: 74, 76]
+      - name: Executando o build
+        run: echo "simulando um docker build"
