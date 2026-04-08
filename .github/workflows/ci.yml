@@ -31,15 +31,22 @@ jobs:
       - name: Executando o build
         run: echo "simulando um docker build"
       
-      - name: Build and Push - Acao 2
+      - name: Build Otimizado com Cache - Acao 3
         run: |
-          # Define o nome da imagem baseado no repositório e converte para minúsculo
+          # Define o nome da imagem e converte para minúsculo
           IMAGE_ID=ghcr.io/${{ github.repository }}
           IMAGE_ID=$(echo $IMAGE_ID | tr '[:upper:]' '[:lower:]')
-          
-          # 1. Build da imagem com a tag do commit e 'latest' 
-          docker build -t $IMAGE_ID:${{ github.sha }} -t $IMAGE_ID:latest .
-          
-          # 2. Push das imagens para o registro [cite: 98, 99]
+
+          # 1. Tenta baixar a imagem existente para usar como cache [cite: 116, 123]
+          docker pull $IMAGE_ID:latest || true
+
+          # 2. Build usando cache-from e BuildKit Inline Cache [cite: 118, 124, 125]
+          docker build \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --cache-from $IMAGE_ID:latest \
+            -t $IMAGE_ID:${{ github.sha }} \
+            -t $IMAGE_ID:latest .
+
+          # 3. Push das novas imagens atualizadas [cite: 121, 122]
           docker push $IMAGE_ID:${{ github.sha }}
           docker push $IMAGE_ID:latest
